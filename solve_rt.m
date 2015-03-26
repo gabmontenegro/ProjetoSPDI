@@ -17,7 +17,7 @@ T = [0, 0];
 it = 0;
 while (ic < nam) && (it < 50)
     %selecionar amostras
-    [u v] = ransac_amostra(4, M0, M1, T1);
+    [u v] = ransac_sample(4, M0, M1, T1);
     T = T + sum(u - v);
     
     if (ic == 0)

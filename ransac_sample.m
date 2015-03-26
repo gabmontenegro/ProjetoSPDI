@@ -1,5 +1,5 @@
 %Selecionar posicao 4 amostras aleatórias da la lista de matches
-function [am1 am2] = ransac_amostra(corr_req, M0, M1, T)
+function [am1 am2] = ransac_sample(corr_req, M0, M1, T)
     
     corr_num = size(M0, 1);
     % Random number generation

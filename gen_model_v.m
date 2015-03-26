@@ -2,9 +2,9 @@ close  all;
 clc;
 clear;
 
-ct = (4150:8632)';
+ct = (4200:8632)';
 %ct = (4150:4170)';
-nam = 80;   %Numero de amostras a serem selecionadas entre os matches
+nam = 100;   %Numero de amostras a serem selecionadas entre os matches
 
 folder = 'C:\Users\Dovahkiin\Documents\PFC - PDI\Projeto de PDI\matlab\siftDemoV4\Framesref\';
 
@@ -24,7 +24,9 @@ for i = 2 : size(ct, 1)
     Ib = strcat(folder, 'frame', int2str(ct(i)),'_video_ref.jpg');
     [mt1 mt2 T Iref Icam] = solve_rt(Ia, Ib, nam);
     
-    if abs(T(1, 1)) >= 0.5
+    fprintf(strcat('Verificar: i: ', int2str(i), '; Frame : ', int2str(ct(i)), '\n'));
+    
+    if abs(T(1, 1)) >= 0.6
         
         direcao_anterior = direcao_atual;
         direcao_atual = sign(T(1, 1));
@@ -32,24 +34,27 @@ for i = 2 : size(ct, 1)
         if (direcao_anterior == 0)
             direcao_anterior = direcao_atual;
         elseif (direcao_anterior ~= direcao_atual)
-            fprintf('Mudança de Sentido\n');
+            fprintf('Sinal Mudança de Sentido\n');
             if (conf_inv == 0)
                 conf_inv = 1;
                 fr_aux = [ct(i)];
                 translacao_aux = abs(T(1, 1));
             else
+                fprintf('Falsa Mudança de Sentido\n');
                 conf_inv = 0;
                 fr_aux = [];
                 translacao_aux = 0;
             end
             
         elseif (conf_inv == 1)
+                 fprintf('Mudança de Sentido Confirmada\n');
                  cont_inv = cont_inv + 1;
                  conf_inv = 0;
                  
                  if (cont_inv < 2)
                     frms = [fr_anterior; fr_aux];
                     stx = [0; translacao_aux];
+                    translacao_acc = translacao_aux;
                  end
         end
         
@@ -64,10 +69,11 @@ for i = 2 : size(ct, 1)
                 id_fr = (1 : size(frms, 1))';
                 
                 fr_anterior = ct(i);
-
+                
                 plot(id_fr, stx, '--o', 'LineWidth', 2, ...
                                           'MarkerEdgeColor','k', ...
                                           'MarkerFaceColor', 'g', 'MarkerSize', 3);
+                fprintf(strcat('Adicionado: i: ', int2str(i), '; Frame : ', int2str(ct(i)), '\n'));
         elseif (cont_inv == 2)
             break;
         end

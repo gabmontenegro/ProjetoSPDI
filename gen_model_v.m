@@ -3,7 +3,6 @@ clc;
 clear;
 
 ct = (4200:8632)';
-%ct = (4150:4170)';
 nam = 100;   %Numero de amostras a serem selecionadas entre os matches
 
 folder = 'C:\Users\Dovahkiin\Documents\PFC - PDI\Projeto de PDI\matlab\siftDemoV4\Framesref\';

@@ -1,15 +1,17 @@
+echo off
 close  all;
 clc;
 clear;
 
-ct = (4200:8632)';
+ct = (1:3246)';
 nam = 100;   %Numero de amostras a serem selecionadas entre os matches
 
-folder = 'C:\Users\Dovahkiin\Documents\PFC - PDI\Projeto de PDI\matlab\siftDemoV4\Framesref\';
+folder = 'C:\Users\Dovahkiin\Documents\MATLAB\siftDemoV4\frames_ref_sel\';
 
-stx = [];
+stx = [0]; %somente para o caso atual; com trajeto com 1 retorno inicial, stx = []; frms = []
+frms = [1];
+
 translacao_acc = 0;
-frms = [];
 direcao_anterior = 0;
 direcao_atual = 0;
 cont_inv = 0;
@@ -35,7 +37,7 @@ for i = 2 : size(ct, 1)
         elseif (direcao_anterior ~= direcao_atual)
             fprintf('Sinal Mudança de Sentido\n');
             if (conf_inv == 0)
-                conf_inv = 1;
+                conf_inv = conf_inv + 1;
                 fr_aux = [ct(i)];
                 translacao_aux = abs(T(1, 1));
             else
@@ -44,24 +46,29 @@ for i = 2 : size(ct, 1)
                 fr_aux = [];
                 translacao_aux = 0;
             end
-            
-        elseif (conf_inv == 1)
-                 fprintf('Mudança de Sentido Confirmada\n');
+        elseif (conf_inv > 0) && (conf_inv <= 6)
+             conf_inv = conf_inv + 1;
+             fr_aux = [fr_aux; ct(i)];
+             translacao_aux = translacao_aux + abs(T(1, 1));
+        elseif (conf_inv > 6)
+                 fprintf('Retorno Confirmada\n');
                  cont_inv = cont_inv + 1;
-                 conf_inv = 0;
                  
-                 if (cont_inv < 2)
-                    frms = [fr_anterior; fr_aux];
-                    stx = [0; translacao_aux];
-                    translacao_acc = translacao_aux;
-                 end
+                 %conf_inv = 0;   % Para esse video que ja começa em um
+                 %extremo, só haverá uma mudança que é a final
+                 
+%                  if (cont_inv < 2)
+%                     frms = [fr_anterior; fr_aux];
+%                     stx = [0; translacao_aux];
+%                     translacao_acc = translacao_aux;
+%                  end
         end
         
         obsv = [obsv; ct(i), T(1, 1), translacao_acc + abs(T(1, 1)), cont_inv, conf_inv ...
                                                     direcao_anterior, direcao_atual];
                                                 
-        if (cont_inv < 2) && (conf_inv == 0)
-                 
+        if (cont_inv < 1) && (conf_inv == 0)
+                   
                 translacao_acc = translacao_acc + abs(T(1, 1));
                 stx = [stx; translacao_acc];
                 frms = [frms; ct(i)];
@@ -69,30 +76,56 @@ for i = 2 : size(ct, 1)
                 
                 fr_anterior = ct(i);
                 
-                plot(id_fr, stx, '--o', 'LineWidth', 2, ...
+                plot(frms, stx, '--o', 'LineWidth', 2, ...
                                           'MarkerEdgeColor','k', ...
                                           'MarkerFaceColor', 'g', 'MarkerSize', 3);
+                hold on;
+                e = regress(stx, frms);
+                posicao = e * (id_fr - 1);
+                plot(id_fr, posicao, 'r');
+                hold on;
+                posicao = e * (frms - 1);
+                plot(frms, posicao, 'b');
                 fprintf(strcat('Adicionado: i: ', int2str(i), '; Frame : ', int2str(ct(i)), '\n'));
-        elseif (cont_inv == 2)
+                
+        elseif (cont_inv == 1)
             break;
         end
         
         
     end
-    
+
     
 end
     
 print(f, '-djpeg', 'grafico_desl.jpg');
 %Estimar modelo por Regressao Linear
-e = regress(stx, id_fr);
+e1 = regress(stx, frms);
+e2 = regress(stx, id_fr);
 
-plot(id_fr, stx, 'r'); 
+plot(frms, stx, 'r'); 
 hold on; 
+posicao1 = e1 * (id_fr - 1);
+posicao2 = e2 * (frms - 1);
+plot(id_fr, posicao1, 'g');
+hold on;
+plot(frms, posicao2, 'b');
 
-posicao = e * (id_fr - 1);
-plot(id_fr, posicao, 'g');
 print(f, '-djpeg', 'grafico_model.jpg');
-dtmodel = [id_fr, frms, posicao];
+dtmodel = [id_fr, posicao1, frms, stx, posicao2];
+dlmwrite('e.txt', [e1, e2], '\t');
 dlmwrite('referencia.txt', dtmodel, '\t');
 dlmwrite('observ.txt', obsv, '\t');
+% 
+% s = dir(strcat(folder, 'frame*.jpg'));
+% nome = {s.name};
+% n = length(nome);
+% for i = 1 : n
+%     n1 = string(nome{i});
+%     n2 = strcat(folder, 'frame', int2str(i),'_video_ref.jpg');
+%     str = ['!ren ' n1 ' ' n2];
+%     eval(str);
+% end
+
+
+

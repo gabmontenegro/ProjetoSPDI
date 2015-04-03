@@ -108,7 +108,7 @@ for i = 2 : size(ct, 1)
 end
     
 print(f, '-djpeg', 'grafico_desl.jpg');
-%Estimar modelo por Regressao Linear
+% Estima o modelo por Regressao Linear
 e1 = regress(stx, frms);
 e2 = regress(stx, id_fr);
 

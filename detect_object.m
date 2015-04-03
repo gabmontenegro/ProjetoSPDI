@@ -1,12 +1,22 @@
-%folder_videos - diretório onde estão todos os vídeos
-%f_frame_ref - número do frame que se deseja iniciar o vídeo de referência
-%l_frame_ref - número do último frame que se deseja do vídeo de referência
-%video_in - nome do vídeo de teste, apenas o nome sem extensão
-%threshold - limiar da detecção dos pontos
-%sync - representa a distancia entre os frames dos dois vídeos
-%exemplo de como executar: detect_points(folder_videos, 500, 2000, video_whitejar_pos1_string, 50, 212);
+%folder_videos - diretório onde estão todos os vídeos. 
+%exemplo: folder_videos = 'C:\Users\Luciana Sena\Documents\MATLAB\sing-amb-part02';
 
-function [] = detect_points (folder_videos, f_frame_ref, l_frame_ref, video_in, threshold, sync)
+%f_frame_ref - número do frame que se deseja iniciar o vídeo de referência
+
+%l_frame_ref - número do último frame que se deseja do vídeo de referência
+
+%video_in - nome do vídeo de teste, apenas o nome sem extensão. 
+%exemplo: video_whitejar_pos1_string = %'obj-sing-amb-part02-video01-whiteJar-pos01';
+%video_brownbox_pos2_string = 'obj-sing-amb-part02-video04-brownBox-pos02'
+
+%threshold - limiar da detecção dos pontos
+
+%sync - representa a distancia entre os frames dos dois vídeos
+%exemplo de como executar: detect_object(folder_videos, 500, 2000, video_whitejar_pos1_string, 50, 212);
+%detect_object(folder_videos, 2100, 4000, video_brownbox_pos2_string, 50, (2100-1810));
+
+
+function [] = detect_object (folder_videos, f_frame_ref, l_frame_ref, video_in, threshold, sync)
 
 f_frame_test = f_frame_ref-sync; 
 folder_frame_ref = fullfile(folder_videos,'frames_ref-sing-amb-part02-video01-reference');
@@ -16,7 +26,7 @@ n_test = f_frame_test;
 for n=1:l_frame_ref-f_frame_ref 
     
     frame_ref = imread(fullfile(folder_frame_ref, sprintf('frame%d_video_ref-sing-amb-part02-video01-reference.jpg',n_ref)));
-    frame_test = imread(fullfile(folder_videos, strcat('frames_',video_in(1:(length(video_in)-4))), sprintf('frame%d_video_%s.jpg',n_test, video_in(1:(length(video_in)-4)))));
+    frame_test = imread(fullfile(folder_videos, strcat('frames_',video_in), sprintf('frame%d_video_%s.jpg',n_test, video_in)));
     n_ref = n_ref + 1;
     n_test = n_test + 1;
     

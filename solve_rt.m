@@ -6,6 +6,7 @@ function [mt1 mt2 T Iref Icam] = solve_rt(im1, im2, nam)
 Ia = imread(im1);
 Ib = imread(im2);
 
+% encontra os pontos de interesse utilizando o SIFT
 [nmat, locs_ref, locs_cam, Iref, Icam] = match(Ia, Ib);
 
 M0 = [locs_ref(:, 1), locs_ref(:, 2)];
@@ -16,7 +17,7 @@ T1 = mean(M0 - M1);
 T = [0, 0];
 it = 0;
 while (ic < nam) && (it < 50)
-    %selecionar amostras
+    % seleciona a posição de 4 amostras da listas de matches
     [u v] = ransac_sample(4, M0, M1, T1);
     T = T + sum(u - v);
     

@@ -1,15 +1,16 @@
+% Localiza o ponto de retorno da câmera.
+% Retorna os valores dos índices do primeiro e do último frame onde foi 
+% sinalizado.
+
 function dt_sinc = locate_return(vid, fr_in)
 
-%folder_v = 'C:\Users\Dovahkiin\Documents\PFC - PDI\Projeto de PDI\Videos\sing-amb-part01\sing-amb-part01\';
-%vid = 'obj-sing-amb-part01-video01.avi'; Video deve estar na msm pasta do
-%script
-
+% Lê o vídeo de referência
 videoref = VideoReader(vid);
 
 numFrames = get(videoref, 'NumberOfFrames');
 
 ct = (1:numFrames)';
-nam = 100;   %Numero de amostras a serem selecionadas entre os matches
+nam = 100;   % Número de amostras a serem selecionadas entre os matches
 
 stx = []; 
 frms = [];

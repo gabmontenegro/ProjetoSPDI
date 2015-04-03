@@ -4,8 +4,9 @@
 %video_in - nome do vídeo de teste, apenas o nome sem extensão
 %threshold - limiar da detecção dos pontos
 %sync - representa a distancia entre os frames dos dois vídeos
+%exemplo de como executar: detect_points(folder_videos, 500, 2000, video_whitejar_pos1_string, 50, 212);
 
-function [] = detect_points (folder_videos, f_frame_ref, l_frame_ref, video_in,threshold,sync)
+function [] = detect_points (folder_videos, f_frame_ref, l_frame_ref, video_in, threshold, sync)
 
 f_frame_test = f_frame_ref-sync; 
 folder_frame_ref = fullfile(folder_videos,'frames_ref-sing-amb-part02-video01-reference');
